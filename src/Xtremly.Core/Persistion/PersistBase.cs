@@ -4,61 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-
-
-/* 项目“Xtremly.Core (net48)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
-
-/* 项目“Xtremly.Core (net451)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
-
-/* 项目“Xtremly.Core (netcoreapp3.1)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
-
-/* 项目“Xtremly.Core (net6.0)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
-
-/* 项目“Xtremly.Core (netstandard2.0)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
-
-/* 项目“Xtremly.Core (netstandard2.1)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
-
-/* 项目“Xtremly.Core (net7.0)”的未合并的更改
-在此之前:
-using static   Xtremly.Core.FilePersistBase;
-在此之后:
-using static Xtremly.Core.FilePersistBase;
-*/
+using System.Reflection; 
 using bf = System.Reflection.BindingFlags;
 namespace Xtremly.Core
 {
 
+    /// <summary>
+    ///  PersistBase
+    /// </summary>
     public abstract class PersistBase
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

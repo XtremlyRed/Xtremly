@@ -2,77 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Serialization;
-
-/* 项目“Xtremly.Core (net48)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
-
-/* 项目“Xtremly.Core (net451)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
-
-/* 项目“Xtremly.Core (netcoreapp3.1)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
-
-/* 项目“Xtremly.Core (net6.0)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
-
-/* 项目“Xtremly.Core (netstandard2.0)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
-
-/* 项目“Xtremly.Core (netstandard2.1)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
-
-/* 项目“Xtremly.Core (net7.0)”的未合并的更改
-在此之前:
-using System;
-using System.Collections.Generic;
-在此之后:
-using System.Text;
-
-using Xtremly.Core;
-*/
+using System.Runtime.Serialization; 
 using System.Text;
 
 namespace Xtremly.Core.Geometry2D

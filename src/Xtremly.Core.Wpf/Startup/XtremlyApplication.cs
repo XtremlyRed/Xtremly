@@ -7,7 +7,7 @@ using System.Windows;
 namespace Xtremly.Core
 {
     /// <summary>
-    /// HiApplicationBase
+    /// XtremlyApplication
     /// </summary>
     public abstract class XtremlyApplication : System.Windows.Application
     {

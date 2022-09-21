@@ -3,7 +3,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 
-[assembly: XmlnsDefinition("http://xtremly-library.org/", "Xtremly.Core ")]
+[assembly: XmlnsDefinition("https://xtremly-library.org/", "Xtremly.Core")]
 
 namespace Xtremly.Core
 {

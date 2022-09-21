@@ -12,8 +12,8 @@
 
 	<PropertyGroup>
 		<Copyright>©ismyhy</Copyright>
-		<Version>5.1.0</Version>
-		<AssemblyVersion>5.1.0</AssemblyVersion>
+		<Version>5.1.1</Version>
+		<AssemblyVersion>5.1.1</AssemblyVersion>
 		<LangVersion>10.0</LangVersion>
 		<PackageProjectUrl>https://github.com/XtremlyRed/Xtremly</PackageProjectUrl>
 	</PropertyGroup>

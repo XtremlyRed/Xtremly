@@ -1,30 +1,5 @@
-﻿/* 项目“Xtremly.Core.Maui (net6.0-android)”的未合并的更改
-在此之前:
-using Xtremly.Core;
-在此之后:
-using System.Diagnostics;
-*/
-
-/* 项目“Xtremly.Core.Maui (net6.0-ios)”的未合并的更改
-在此之前:
-using Xtremly.Core;
-在此之后:
-using System.Diagnostics;
-*/
-
-/* 项目“Xtremly.Core.Maui (net6.0-maccatalyst)”的未合并的更改
-在此之前:
-using Xtremly.Core;
-在此之后:
-using System.Diagnostics;
-*/
-
-/* 项目“Xtremly.Core.Maui (net6.0-windows10.0.19041.0)”的未合并的更改
-在此之前:
-using Xtremly.Core;
-在此之后:
-using System.Diagnostics;
-*/
+﻿ 
+using System.Diagnostics; 
 
 namespace Xtremly.Core
 {

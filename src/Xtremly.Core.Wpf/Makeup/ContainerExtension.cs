@@ -13,7 +13,7 @@ namespace Xtremly.Core
     ///   <TextBlock
     ///     Text="{Binding
     ///       Path=Foo,
-    ///       Converter={hi:Container {x:Type local:MyConverter}}}" />
+    ///       Converter={xtremly:Container {x:Type local:MyConverter}}}" />
     /// ]]>
     /// </para>
     /// <para>
@@ -21,7 +21,7 @@ namespace Xtremly.Core
     /// <![CDATA[
     ///   <Window>
     ///     <Window.DataContext>
-    ///       <hi:Container ServiceType="{x:Type local:MyViewModel}" />
+    ///       <xtremly:Container ServiceType="{x:Type local:MyViewModel}" />
     ///     </Window.DataContext>
     ///   </Window>
     /// ]]>
