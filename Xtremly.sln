@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32714.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xtremly.Core.Wpf", "src\Xtremly.Core.Wpf\Xtremly.Core.Wpf.csproj", "{7B656D18-3B36-46CD-8D04-F94E8C0069A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xtremly.Core", "src\Xtremly.Core\Xtremly.Core.csproj", "{9A871961-9E1F-470D-9918-E3BE75F49384}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xtremly.Core.Wpf.Test", "src\Xtremly.Core.Wpf.Test\Xtremly.Core.Wpf.Test.csproj", "{735970CF-CAB6-412F-BC6E-CAAD4D4DF07C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{5AE4280D-D575-4CCB-82F5-F5ECA6462AFD}"
+	ProjectSection(SolutionItems) = preProject
+		GlobalCompileSettings.Targets = GlobalCompileSettings.Targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xtremly.Core.Maui", "src\Xtremly.Core.Maui\Xtremly.Core.Maui.csproj", "{B0AB579D-F314-4716-B2A0-5C868BCA6559}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B656D18-3B36-46CD-8D04-F94E8C0069A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B656D18-3B36-46CD-8D04-F94E8C0069A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B656D18-3B36-46CD-8D04-F94E8C0069A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B656D18-3B36-46CD-8D04-F94E8C0069A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A871961-9E1F-470D-9918-E3BE75F49384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A871961-9E1F-470D-9918-E3BE75F49384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A871961-9E1F-470D-9918-E3BE75F49384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A871961-9E1F-470D-9918-E3BE75F49384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{735970CF-CAB6-412F-BC6E-CAAD4D4DF07C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{735970CF-CAB6-412F-BC6E-CAAD4D4DF07C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{735970CF-CAB6-412F-BC6E-CAAD4D4DF07C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{735970CF-CAB6-412F-BC6E-CAAD4D4DF07C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0AB579D-F314-4716-B2A0-5C868BCA6559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0AB579D-F314-4716-B2A0-5C868BCA6559}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0AB579D-F314-4716-B2A0-5C868BCA6559}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B0AB579D-F314-4716-B2A0-5C868BCA6559}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0AB579D-F314-4716-B2A0-5C868BCA6559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0AB579D-F314-4716-B2A0-5C868BCA6559}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {53E9C705-D080-42A2-A69E-1F0B42308D26}
+	EndGlobalSection
+EndGlobal

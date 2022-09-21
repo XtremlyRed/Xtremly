@@ -1,0 +1,9 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:xtremly="clr-namespace:Xtremly.Core">
+    <xtremly:String2VisibilityReConverter x:Key="String2VisibilityReConverter" />
+    <xtremly:EnumDescriptionConverter x:Key="EnumDescriptionConverter" />
+    <xtremly:ValueIncreaseConverter x:Key="ValueIncreaseConverter" />
+    <xtremly:ThicknessIncreaseConverter x:Key="ThicknessIncreaseConverter" />
+</ResourceDictionary>

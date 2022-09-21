@@ -1,0 +1,12 @@
+﻿################################################################################
+# 此 .gitignore 文件已由 Microsoft(R) Visual Studio 自动创建。
+################################################################################
+
+/bin/AnyCPU
+/.vs
+/src/Xtremly.Core/obj
+/src/Xtremly.Core.Maui/obj
+/src/Xtremly.Core.Wpf/obj
+/src/Xtremly.Core.Wpf.Test/bin
+/src/Xtremly.Core.Wpf.Test/obj
+/src/Xtremly.Core.Wpf.Test
