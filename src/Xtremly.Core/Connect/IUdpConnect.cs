@@ -9,12 +9,22 @@ using System.Threading.Tasks;
 
 namespace Xtremly.Core.Connect
 {
+    /// <summary>
+    /// IUdpConnect
+    /// </summary>
     public interface IUdpConnect
     {
+        /// <summary>
+        /// startup udp connect
+        /// </summary>
+        /// <returns></returns>
         IMessageTransfer RunAsync();
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class UdpConnect : IUdpConnect
     {
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -23,7 +33,7 @@ namespace Xtremly.Core.Connect
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ConnectConfiguration hostConfiguration;
+        private readonly ConnectConfiguration connectConfiguration;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -39,41 +49,51 @@ namespace Xtremly.Core.Connect
         private bool isDisposed;
 
 
-        public UdpConnect(ConnectConfiguration hostConfiguration)
+        /// <summary>
+        /// create udp connect by  <paramref name="connectConfiguration"/>
+        /// </summary>
+        /// <param name="connectConfiguration"></param>
+        public UdpConnect(ConnectConfiguration connectConfiguration)
         {
-            this.hostConfiguration = hostConfiguration;
+            this.connectConfiguration = connectConfiguration;
         }
 
+        /// <summary>
+        /// startup udp connect
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">if localEndPoint is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">if connectConfiguration.bufferSize <= 0</exception>
         public IMessageTransfer RunAsync()
         {
-            if (hostConfiguration.localEndPoint is null)
+            if (connectConfiguration.localEndPoint is null)
             {
-                throw new ArgumentNullException(nameof(hostConfiguration.localEndPoint));
+                throw new ArgumentNullException(nameof(connectConfiguration.localEndPoint));
             }
-            if (hostConfiguration.bufferSize <= 0)
+            if (connectConfiguration.bufferSize <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(hostConfiguration.bufferSize));
+                throw new ArgumentOutOfRangeException(nameof(connectConfiguration.bufferSize));
             }
 
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            socket.Bind(hostConfiguration.localEndPoint);
+            socket.Bind(connectConfiguration.localEndPoint);
             socket.DontFragment = true;
 
-            asyncSendPool = new AsyncTransferProxy(hostConfiguration.bufferSize);
+            asyncSendPool = new AsyncTransferProxy(connectConfiguration.bufferSize);
 
             SocketAsyncEventArgs socketArgs = new();
-            socketArgs.SetBuffer(new byte[hostConfiguration.bufferSize], 0, hostConfiguration.bufferSize);
+            socketArgs.SetBuffer(new byte[connectConfiguration.bufferSize], 0, connectConfiguration.bufferSize);
             socketArgs.Completed += EndReceive;
             socketArgs.RemoteEndPoint = emptyEndPoint;
             BeginReceive(socketArgs);
 
-            return new MessageTransfer(socket, hostConfiguration.remoteEndPoint, asyncSendPool, ThrowIfDisopsed);
+            return new MessageTransfer(socket, connectConfiguration.remoteEndPoint, asyncSendPool, ThrowIfDisopsed);
         }
 
 
         /// <summary>
-        /// 异步接收数据
+        /// BeginReceive
         /// </summary>
         /// <param name="e"></param>
         private void BeginReceive(SocketAsyncEventArgs e)
@@ -100,19 +120,19 @@ namespace Xtremly.Core.Connect
 
                 Buffer.BlockCopy(e.Buffer, 0, currentReceviedBuffer, 0, e.BytesTransferred);
 
-                MessageTransfer tran = new(socket, hostConfiguration.remoteEndPoint, asyncSendPool, ThrowIfDisopsed);
+                MessageTransfer tran = new(socket, connectConfiguration.remoteEndPoint, asyncSendPool, ThrowIfDisopsed);
 
                 Task.Factory.StartNew(() =>
                 {
                     try
                     {
-                        hostConfiguration.recevieCallback?.Invoke(tran, currentReceviedBuffer);
+                        connectConfiguration.recevieCallback?.Invoke(tran, currentReceviedBuffer);
 
                         currentReceviedBuffer = null;
                     }
                     catch (Exception e)
                     {
-                        hostConfiguration.errorCallback?.Invoke(e);
+                        connectConfiguration.errorCallback?.Invoke(e);
                     }
                 }, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
 
@@ -130,6 +150,9 @@ namespace Xtremly.Core.Connect
         }
 
 
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
             isDisposed = true;

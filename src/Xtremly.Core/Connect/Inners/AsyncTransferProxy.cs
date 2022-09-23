@@ -10,7 +10,7 @@ namespace Xtremly.Core.Connect
     /// <summary>
     /// async send <see cref="SocketAsyncEventArgs"/> proxy
     /// </summary>
-    internal class AsyncTransferProxy
+    internal class AsyncTransferProxy : IDisposable
     {
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -18,13 +18,12 @@ namespace Xtremly.Core.Connect
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ConcurrentStack<SocketAsyncEventArgs> socketArgsStack = new();
+        private ConcurrentStack<SocketAsyncEventArgs> socketArgsStack = new();
 
         /// <summary>
         /// new
         /// </summary>
-        /// <param name="bufferSize"></param>
-        /// <param name="socket"></param>
+        /// <param name="bufferSize"></param> 
         public AsyncTransferProxy(int bufferSize)
         {
             this.bufferSize = bufferSize;
@@ -43,10 +42,10 @@ namespace Xtremly.Core.Connect
 
         #region Public Methods
         /// <summary>
-        /// acquire
+        /// Popup
         /// </summary>
         /// <returns></returns>
-        public SocketAsyncEventArgs Popup()
+        public SocketAsyncEventArgs PopupEventArgs()
         {
             if (socketArgsStack.TryPop(out SocketAsyncEventArgs e))
             {
@@ -69,11 +68,13 @@ namespace Xtremly.Core.Connect
         /// <summary>
         /// sned async
         /// </summary>
-        /// <param name="endPoint"></param>
+        /// <param name="socket"></param>
         /// <param name="buffer"></param>
-        /// <exception cref="ArgumentNullException">endPoint is null</exception>
-        /// <exception cref="ArgumentNullException">payload is null or empty</exception>
-        /// <exception cref="ArgumentOutOfRangeException">payload length > messageBufferSize</exception>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <exception cref="ArgumentNullException">socket is null</exception>
+        /// <exception cref="ArgumentNullException">buffer is null or empty</exception>
+        /// <exception cref="ArgumentOutOfRangeException">buffer length > messageBufferSize</exception>
         public void SendAsync(Socket socket, byte[] buffer, int offset, int length)
         {
             if (buffer == null)
@@ -86,7 +87,7 @@ namespace Xtremly.Core.Connect
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
 
-            SocketAsyncEventArgs e = Popup();
+            SocketAsyncEventArgs e = PopupEventArgs();
             e.RemoteEndPoint = socket.RemoteEndPoint ?? throw new ArgumentNullException("endPoint");
 
             Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
@@ -99,8 +100,17 @@ namespace Xtremly.Core.Connect
             }
         }
 
-
-        public void SendAsync(Socket socket,EndPoint endPoint, byte[] buffer, int offset, int length)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="endPoint"></param>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public void SendAsync(Socket socket, EndPoint endPoint, byte[] buffer, int offset, int length)
         {
             if (buffer == null)
             {
@@ -112,7 +122,7 @@ namespace Xtremly.Core.Connect
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
 
-            SocketAsyncEventArgs e = Popup();
+            SocketAsyncEventArgs e = PopupEventArgs();
             e.RemoteEndPoint = endPoint ?? throw new ArgumentNullException("endPoint");
 
             Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
@@ -123,6 +133,15 @@ namespace Xtremly.Core.Connect
             {
                 Release(e);
             }
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public void Dispose()
+        {
+            socketArgsStack?.Clear();
+            socketArgsStack = null;
         }
         #endregion
     }

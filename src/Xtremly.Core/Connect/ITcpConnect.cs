@@ -8,17 +8,48 @@ using System.Threading.Tasks;
 
 namespace Xtremly.Core.Connect
 {
+    /// <summary>
+    /// <see cref="ITcpConnect"/>
+    /// </summary>
     public interface ITcpConnect
     {
-        ITcpConnect UseAcceptCallback(Action<IMessageTransfer> acceptCallback);
-
-        ITcpConnect UseListen(int backlog);
-
+        /// <summary>
+        /// startup tcp connect
+        /// </summary>
+        /// <returns></returns>
         IMessageTransfer RunAsync();
     }
 
+    /// <summary>
+    /// <see cref="ITcpServer"/>
+    /// </summary>
+    public interface ITcpServer
+    {
+        /// <summary>
+        /// accept socket 
+        /// </summary>
+        /// <param name="acceptCallback"></param>
+        /// <returns></returns>
+        ITcpServer UseAccept(Action<IMessageTransfer> acceptCallback);
 
-    public class TcpConnect : ITcpConnect
+        /// <summary>
+        /// set  backlog
+        /// </summary>
+        /// <param name="backlog"></param>
+        /// <returns></returns>
+        ITcpServer UseListen(int backlog);
+        /// <summary>
+        /// startup tcp connect
+        /// </summary>
+        /// <returns></returns>
+        void RunAsync();
+    }
+
+
+    /// <summary>
+    /// <see cref="TcpConnect"/>
+    /// </summary>
+    public class TcpConnect : ITcpConnect, ITcpServer
     {
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -48,12 +79,48 @@ namespace Xtremly.Core.Connect
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private Action<IMessageTransfer> acceptCallback;
 
+        /// <summary>
+        /// create tcp connect by  <paramref name="connectConfiguration"/>
+        /// </summary>
+        /// <param name="connectConfiguration"></param>
         public TcpConnect(ConnectConfiguration connectConfiguration)
         {
             this.connectConfiguration = connectConfiguration;
         }
+        void ITcpServer.RunAsync()
+        {
+            SocketBuilder();
 
+            if (backlog <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(backlog));
+            }
+            socket.Listen(backlog);
+            BeginAccept();
+        }
+
+
+        /// <summary>
+        /// startup tcp connect
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public IMessageTransfer RunAsync()
+        {
+            SocketBuilder();
+
+            if (connectConfiguration.remoteEndPoint is null)
+            {
+                throw new ArgumentNullException(nameof(connectConfiguration.remoteEndPoint));
+            }
+
+            BeginReceive(connectConfiguration.remoteEndPoint, socket);
+
+            return new MessageTransfer(socket, asyncSendPool, ThrowIfDisopsed);
+        }
+
+
+        private void SocketBuilder()
         {
             if (connectConfiguration.localEndPoint is null)
             {
@@ -71,32 +138,25 @@ namespace Xtremly.Core.Connect
             socket.Bind(connectConfiguration.localEndPoint);
             socket.DontFragment = true;
 
-
-            if (backlog > 0)
-            {
-                socket.Listen(backlog);
-                BeginAccept();
-
-                return new MessageTransfer(socket, null, ThrowIfDisopsed);
-            }
-
-            if (connectConfiguration.remoteEndPoint is null)
-            {
-                throw new ArgumentNullException(nameof(connectConfiguration.remoteEndPoint));
-            }
-
-            BeginReceive(connectConfiguration.remoteEndPoint, socket);
-
-            return new MessageTransfer(socket, asyncSendPool, ThrowIfDisopsed);
         }
 
-        public ITcpConnect UseListen(int backlog)
+        /// <summary>
+        /// backlog
+        /// </summary>
+        /// <param name="backlog"></param>
+        /// <returns></returns>
+        public ITcpServer UseListen(int backlog)
         {
             this.backlog = backlog;
             return this;
         }
 
-        public ITcpConnect UseAcceptCallback(Action<IMessageTransfer> acceptCallback)
+        /// <summary>
+        /// acceptCallback
+        /// </summary>
+        /// <param name="acceptCallback"></param>
+        /// <returns></returns>
+        public ITcpServer UseAccept(Action<IMessageTransfer> acceptCallback)
         {
             this.acceptCallback = acceptCallback;
             return this;
@@ -126,9 +186,7 @@ namespace Xtremly.Core.Connect
 
             }, socket);
         }
-
-
-
+         
         private void BeginReceive(EndPoint remoteEndPoint, Socket socket)
         {
 
@@ -147,7 +205,7 @@ namespace Xtremly.Core.Connect
                 }
             }
 
-            socketArgs = asyncSendPool.Popup();
+            socketArgs = asyncSendPool.PopupEventArgs();
             socketArgs.RemoteEndPoint = remoteEndPoint;
             socketArgs.UserToken = socket;
             socketArgs.Completed += EndReceive;
@@ -219,14 +277,19 @@ namespace Xtremly.Core.Connect
                 throw new ObjectDisposedException(nameof(UdpConnect));
             }
         }
-
-
+         
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
             isDisposed = true;
             socket?.Close();
             socket?.Dispose();
             socket = null;
+
+            asyncSendPool?.Dispose();
+            asyncSendPool = null;
         }
     }
 }
