@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -16,6 +17,17 @@ namespace Xtremly.Core.Geometry2D
     [ComVisible(true)]
     public struct CircleD
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double x;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double y;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double r;
         /// <summary>
         /// empty circle
         /// </summary>
@@ -26,12 +38,9 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         /// <param name="center"></param>
         /// <param name="radius"></param>
-        public CircleD(PointD center, double radius)
+        public CircleD(PointD center, double radius) : this(center.X, center.Y, radius)
         {
-            Center = center;
-            X = center.X;
-            Y = center.Y;
-            Radius = radius;
+
         }
 
         /// <summary>
@@ -40,46 +49,48 @@ namespace Xtremly.Core.Geometry2D
         /// <param name="centerX"></param>
         /// <param name="centerY"></param>
         /// <param name="radius"></param>
-        public CircleD(double centerX, double centerY, double radius) : this(new PointD(centerX, centerY), radius)
+        public CircleD(double centerX, double centerY, double radius)
         {
-
+            x = centerX;
+            y = centerY;
+            r = radius;
         }
 
         /// <summary>
         /// is empty
         /// </summary>
         [Browsable(false)]
-        public bool IsEmpty => X == 0 && Y == 0 && Radius == 0;
+        public bool IsEmpty => x == 0 && y == 0 && r == 0;
 
         /// <summary>
         /// center
         /// </summary>
         [Browsable(false)]
-        public PointD Center { get; set; }
+        public PointD Center => new(x, y);
 
         /// <summary>
         /// center x
         /// </summary>
         [DataMember]
-        public double X { get; set; }
+        public double X { get => x; set => x = value; }
 
         /// <summary>
         /// center y
         /// </summary>
         [DataMember]
-        public double Y { get; set; }
+        public double Y { get => y; set => y = value; }
 
         /// <summary>
         /// radius
         /// </summary>
         [DataMember]
-        public double Radius { get; set; }
+        public double Radius { get => r; set => r = value; }
 
         /// <summary>
         /// circle bound
         /// </summary>
         [Browsable(false)]
-        public RectangleD Bound => new(X - Radius, Y - Radius, Radius * 2, Radius * 2);
+        public RectangleD Bound => new(x - r, y - r, r * 2, r * 2);
 
         /// <summary>
         /// offset circle
@@ -88,7 +99,7 @@ namespace Xtremly.Core.Geometry2D
         /// <param name="dy"></param>
         public CircleD Offset(double dx, double dy)
         {
-            CircleD circle = new(X + dx, Y + dy, Radius);
+            CircleD circle = new(x + dx, y + dy, r);
 
             return circle;
         }
@@ -110,7 +121,7 @@ namespace Xtremly.Core.Geometry2D
         [Browsable(false)]
         public static double GetPerimeter(CircleD circel)
         {
-            return 2 * Math.PI * circel.Radius;
+            return 2 * Math.PI * circel.r;
         }
 
         /// <summary>
@@ -121,7 +132,7 @@ namespace Xtremly.Core.Geometry2D
         [Browsable(false)]
         public static double GetArea(CircleD circel)
         {
-            return Math.PI * circel.Radius * circel.Radius;
+            return Math.PI * circel.r * circel.r;
         }
 
         /// <summary>
@@ -130,7 +141,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override string ToString()
         {
-            return $"({X},{Y}) {Radius}";
+            return $"({x},{y}) {r}";
         }
 
         /// <summary>
@@ -139,7 +150,7 @@ namespace Xtremly.Core.Geometry2D
         /// <param name="radius"></param>
         public void Inflate(double radius)
         {
-            Radius += radius;
+            r += radius;
         }
 
         /// <summary>
@@ -150,7 +161,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static CircleD operator +(CircleD circel, VectorD vector)
         {
-            return new CircleD(circel.X + vector.X, circel.Y + vector.Y, circel.Radius);
+            return new CircleD(circel.x + vector.X, circel.y + vector.Y, circel.r);
         }
 
         /// <summary>
@@ -161,7 +172,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static CircleD operator -(CircleD circel, VectorD vector)
         {
-            return new CircleD(circel.X - vector.X, circel.Y - vector.Y, circel.Radius);
+            return new CircleD(circel.x - vector.X, circel.y - vector.Y, circel.r);
         }
 
         /// <summary>
@@ -172,7 +183,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static CircleD operator *(CircleD circel, double scaler)
         {
-            return new CircleD(circel.X, circel.Y, circel.Radius * scaler);
+            return new CircleD(circel.x, circel.y, circel.r * scaler);
         }
 
         /// <summary>
@@ -186,7 +197,7 @@ namespace Xtremly.Core.Geometry2D
         {
             return scaler == 0d
                 ? throw new ArgumentOutOfRangeException(nameof(scaler))
-                : new CircleD(circel.X, circel.Y, circel.Radius / scaler);
+                : new CircleD(circel.x, circel.y, circel.r / scaler);
         }
 
         /// <summary>
@@ -197,7 +208,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator ==(CircleD left, CircleD right)
         {
-            return left.Center == right.Center && left.Radius == right.Radius;
+            return left.x == right.x && left.y == right.y && left.r == right.r;
         }
 
         /// <summary>
@@ -208,7 +219,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator !=(CircleD left, CircleD right)
         {
-            return left.Center != right.Center || left.Radius != right.Radius;
+            return left.x != right.x || left.y != right.y || left.r != right.r;
         }
 
         /// <summary>
@@ -218,7 +229,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            return obj is CircleD p1 && X == p1.X && Y == p1.Y && Radius == p1.Radius;
+            return obj is CircleD p1 && x == p1.x && y == p1.y && r == p1.r;
         }
 
         /// <summary>
@@ -227,7 +238,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return Center.GetHashCode() ^ Radius.GetHashCode();
+            return x.GetHashCode() ^ y.GetHashCode() ^ r.GetHashCode();
         }
 
         /// <summary>
@@ -237,7 +248,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public string Format(int retainDecimalPlaces = 2)
         {
-            return $"({Math.Round(X, retainDecimalPlaces)},{Math.Round(Y, retainDecimalPlaces)}) {Math.Round(Radius, retainDecimalPlaces)}";
+            return $"({Math.Round(x, retainDecimalPlaces)},{Math.Round(y, retainDecimalPlaces)}) {Math.Round(r, retainDecimalPlaces)}";
         }
 
         /// <summary>
@@ -247,7 +258,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public CircleD Round(int retainDecimalPlaces = 2)
         {
-            return new CircleD(Math.Round(X, retainDecimalPlaces), Math.Round(Y, retainDecimalPlaces), Math.Round(Radius, retainDecimalPlaces));
+            return new CircleD(Math.Round(x, retainDecimalPlaces), Math.Round(y, retainDecimalPlaces), Math.Round(r, retainDecimalPlaces));
         }
     }
 }

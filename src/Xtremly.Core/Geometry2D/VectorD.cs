@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -16,6 +17,13 @@ namespace Xtremly.Core.Geometry2D
     [ComVisible(true)]
     public struct VectorD
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double x;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double y;
 
         /// <summary>
         /// 
@@ -29,34 +37,35 @@ namespace Xtremly.Core.Geometry2D
         /// <param name="y"></param>
         public VectorD(double x, double y)
         {
-            X = x;
-            Y = y;
+            this.x = x;
+            this.y = y;
         }
+
 
         /// <summary>
         /// X
         /// </summary>
         [DataMember]
-        public double X { get; set; }
+        public double X { get => x; set => x = value; }
         /// <summary>
         /// Y
         /// </summary>
         [DataMember]
-        public double Y { get; set; }
+        public double Y { get => y; set => y = value; }
 
         /// <summary>
         /// 
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IsEmpty => X == 0f && Y == 0f;
+        public bool IsEmpty => x == 0f && y == 0f;
 
         /// <summary>
         ///  length
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public double Length => Math.Sqrt(X * X + Y * Y);
+        public double Length => Math.Sqrt(x * x + y * y);
 
         /// <summary>
         /// 
@@ -67,7 +76,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public VectorD Add(VectorD vector)
         {
-            return new VectorD(X + vector.X, Y + vector.Y);
+            return new VectorD(x + vector.X, y + vector.Y);
         }
 
         /// <summary>
@@ -79,7 +88,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public VectorD Subtract(VectorD vector)
         {
-            return new VectorD(X - vector.X, Y - vector.Y);
+            return new VectorD(x - vector.X, y - vector.Y);
         }
 
         /// <summary>
@@ -91,7 +100,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public VectorD Multiply(double scalar)
         {
-            return new VectorD(X * scalar, Y * scalar);
+            return new VectorD(x * scalar, y * scalar);
         }
 
         /// <summary>
@@ -106,7 +115,7 @@ namespace Xtremly.Core.Geometry2D
         {
             return scalar == 0d
                 ? throw new ArgumentOutOfRangeException(nameof(scalar))
-                : new VectorD(X / scalar, Y / scalar);
+                : new VectorD(x / scalar, y / scalar);
         }
 
         /// <summary>
@@ -118,10 +127,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public VectorD Offset(double dx, double dy)
         {
-            X += dx;
-            Y += dy;
-
-            return new VectorD(X + dx, Y + dy);
+            return new VectorD(x + dx, y + dy);
         }
         /// <summary>
         /// 
@@ -131,7 +137,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public VectorD Offset(VectorD vector)
         {
-            return Offset(vector.X, vector.Y);
+            return Offset(vector.x, vector.y);
         }
 
 
@@ -143,7 +149,7 @@ namespace Xtremly.Core.Geometry2D
         {
             double length = vector.Length;
 
-            return Math.Abs(length) <= 0 ? new VectorD(vector.X, vector.Y) : new VectorD(vector.X / length, vector.Y / length);
+            return Math.Abs(length) <= 0 ? new VectorD(vector.x, vector.y) : new VectorD(vector.x / length, vector.y / length);
         }
 
         /// <summary>
@@ -154,7 +160,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static double CrossProduct(VectorD vector1, VectorD vector2)
         {
-            return vector1.X * vector2.Y - vector1.Y * vector2.X;
+            return vector1.x * vector2.y - vector1.y * vector2.x;
         }
 
         /// <summary>
@@ -165,8 +171,8 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static double AngleBetween(VectorD vector1, VectorD vector2)
         {
-            double y = vector1.X * vector2.Y - vector2.X * vector1.Y;
-            double x = vector1.X * vector2.X + vector1.Y * vector2.Y;
+            double y = vector1.x * vector2.y - vector2.x * vector1.y;
+            double x = vector1.x * vector2.x + vector1.y * vector2.y;
             return Math.Atan2(y, x) * 57.295779513082323;
         }
 
@@ -178,8 +184,8 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static double GetDistance(VectorD current, VectorD other)
         {
-            double x2 = Math.Pow(current.X - other.X, 2);
-            double y2 = Math.Pow(current.Y - other.Y, 2);
+            double x2 = Math.Pow(current.x - other.x, 2);
+            double y2 = Math.Pow(current.y - other.y, 2);
 
             return Math.Sqrt(x2 + y2);
         }
@@ -191,7 +197,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override string ToString()
         {
-            return $"({X},{Y})";
+            return $"({x},{y})";
         }
 
         /// <summary>
@@ -202,7 +208,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static VectorD operator +(VectorD v1, VectorD v2)
         {
-            return new VectorD(v1.X + v2.X, v1.Y + v2.Y);
+            return new VectorD(v1.x + v2.x, v1.y + v2.y);
         }
 
         /// <summary>
@@ -213,7 +219,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static VectorD operator -(VectorD v1, VectorD v2)
         {
-            return new VectorD(v1.X - v2.X, v1.Y - v2.Y);
+            return new VectorD(v1.x - v2.x, v1.y - v2.y);
         }
 
         /// <summary>
@@ -223,7 +229,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static VectorD operator -(VectorD vetcor)
         {
-            return new VectorD(-vetcor.X, -vetcor.Y);
+            return new VectorD(-vetcor.x, -vetcor.y);
         }
 
         /// <summary>
@@ -234,7 +240,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static VectorD operator *(VectorD vector, double scalar)
         {
-            return new VectorD(vector.X * scalar, vector.Y * scalar);
+            return new VectorD(vector.x * scalar, vector.y * scalar);
         }
 
         /// <summary>
@@ -245,7 +251,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static VectorD operator *(double scalar, VectorD vector)
         {
-            return new VectorD(vector.X * scalar, vector.Y * scalar);
+            return new VectorD(vector.x * scalar, vector.y * scalar);
         }
 
         /// <summary>
@@ -259,7 +265,7 @@ namespace Xtremly.Core.Geometry2D
         {
             return scalar == 0d
                 ? throw new ArgumentOutOfRangeException(nameof(scalar))
-                : new VectorD(vector.X / scalar, vector.Y / scalar);
+                : new VectorD(vector.x / scalar, vector.y / scalar);
         }
 
         /// <summary>
@@ -270,7 +276,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator ==(VectorD left, VectorD right)
         {
-            return left.X == right.X && left.Y == right.Y;
+            return left.x == right.x && left.y == right.y;
         }
 
         /// <summary>
@@ -281,7 +287,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator !=(VectorD left, VectorD right)
         {
-            return left.X != right.X || left.Y != right.Y;
+            return left.x != right.x || left.y != right.y;
         }
 
         /// <summary>
@@ -291,7 +297,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            return obj is VectorD p1 && X == p1.X && Y == p1.Y;
+            return obj is VectorD p1 && x == p1.x && y == p1.y;
         }
 
         /// <summary>
@@ -300,7 +306,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return X.GetHashCode() ^ Y.GetHashCode();
+            return x.GetHashCode() ^ y.GetHashCode();
         }
 
         /// <summary>
@@ -309,7 +315,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public PointD ToPoint()
         {
-            return new PointD(X, Y);
+            return new PointD(x, y);
         }
     }
 }

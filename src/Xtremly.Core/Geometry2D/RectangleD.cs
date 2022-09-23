@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -18,6 +19,24 @@ namespace Xtremly.Core.Geometry2D
     public struct RectangleD
     {
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double x;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double y;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double width;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double height;
+
+
+
         /// <summary>
         /// empty rectangle
         /// </summary>
@@ -32,11 +51,13 @@ namespace Xtremly.Core.Geometry2D
         /// <param name="height"></param>
         public RectangleD(double x, double y, double width, double height)
         {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
+
+
 
         /// <summary>
         /// create a new rectangle
@@ -52,116 +73,116 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public double Right => X + Width;
+        public double Right => x + width;
 
         /// <summary>
         /// Top
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public double Top => Y + Height;
+        public double Top => y + height;
 
         /// <summary>
         /// Left
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public double Left => X;
+        public double Left => x;
 
         /// <summary>
         /// Bottom
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public double Bottom => Y;
+        public double Bottom => y;
 
         /// <summary>
         /// Width
         /// </summary>
         [DataMember]
-        public double Width { get; set; }
+        public double Width { get => width; set => width = value; }
 
         /// <summary>
         /// Height
         /// </summary>
         [DataMember]
-        public double Height { get; set; }
+        public double Height { get => height; set => height = value; }
 
         /// <summary>
         /// Y
         /// </summary>
         [DataMember]
-        public double Y { get; set; }
+        public double Y { get => y; set => y = value; }
 
         /// <summary>
         /// X
         /// </summary>
         [DataMember]
-        public double X { get; set; }
+        public double X { get => x; set => x = value; }
 
         /// <summary>
         /// invalid rectangle
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IsEmpty => Width <= 0d || Height <= 0d;
+        public bool IsEmpty => width <= 0d || height <= 0d;
 
         /// <summary>
         /// Size
         /// </summary>
         [Browsable(false)]
-        public SizeD Size => new(Width, Height);
+        public SizeD Size => new(width, height);
 
         /// <summary>
         /// Location
         /// </summary>
         [Browsable(false)]
-        public PointD Location => new(X, Y);
+        public PointD Location => new(x, y);
 
         /// <summary>
         /// Center
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public PointD Center => new(X + Width / 2, Y + Height / 2);
+        public PointD Center => new(x + width / 2, y + height / 2);
 
         /// <summary>
         /// LeftBottom
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public PointD LeftBottom => new(X, Y);
+        public PointD LeftBottom => new(x, y);
 
         /// <summary>
         /// LeftTop
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public PointD LeftTop => new(X, Y + Height);
+        public PointD LeftTop => new(x, y + height);
 
         /// <summary>
         /// RightBottom
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public PointD RightBottom => new(X + Width, Y);
+        public PointD RightBottom => new(x + width, y);
 
         /// <summary>
         /// RightTop
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public PointD RightTop => new(X + Width, Y + Height);
+        public PointD RightTop => new(x + width, y + height);
 
         /// <summary>
         /// Copy
         /// </summary>
         public void CopyTo(RectangleD other)
         {
-            other.X = X;
-            other.Y = Y;
-            other.Width = Width;
-            other.Height = Height;
+            other.X = x;
+            other.Y = y;
+            other.Width = width;
+            other.Height = height;
         }
 
         /// <summary>
@@ -169,7 +190,7 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         public RectangleD Copy()
         {
-            return new RectangleD(X, Y, Width, Height);
+            return new RectangleD(x, y, width, height);
         }
 
         /// <summary>
@@ -262,9 +283,9 @@ namespace Xtremly.Core.Geometry2D
         /// offset rectangle location by <paramref name="point"/>
         /// </summary>
         /// <param name="point"></param>
-        public void Offset(PointD point)
+        public RectangleD Offset(PointD point)
         {
-            Offset(point.X, point.Y);
+            return Offset(point.X, point.Y);
         }
 
         /// <summary>
@@ -272,10 +293,9 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        public void Offset(double x, double y)
+        public RectangleD Offset(double x, double y)
         {
-            X += x;
-            Y += y;
+            return new RectangleD(this.x + x, this.y + y, width, height);
         }
 
         /// <summary>
@@ -283,19 +303,18 @@ namespace Xtremly.Core.Geometry2D
         ///   </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public void Inflate(double width, double height)
+        public RectangleD Inflate(double width, double height)
         {
-            Width += width;
-            Height += height;
+            return new RectangleD(x, y, this.width + width, this.height + height);
         }
 
         /// <summary>
         /// inflate rectangle size by <paramref name="size"/>
         /// </summary>
         /// <param name="size"></param>
-        public void Inflate(SizeD size)
+        public RectangleD Inflate(SizeD size)
         {
-            Inflate(size.Width, size.Height);
+            return Inflate(size.Width, size.Height);
         }
 
         /// <summary>
@@ -314,7 +333,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override string ToString()
         {
-            return $"({X},{Y}) ({Width},{Height})";
+            return $"({x},{y}) ({width},{height})";
         }
         /// <summary>
         /// get hash code

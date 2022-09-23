@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -16,6 +17,15 @@ namespace Xtremly.Core.Geometry2D
     [ComVisible(true)]
     public struct PointD
     {
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double x;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private double y;
+
         /// <summary>
         ///  Origin point
         /// </summary>
@@ -26,7 +36,7 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         public PointD()
         {
-            X = Y = 0;
+            x = y = 0;
         }
 
         /// <summary>
@@ -34,28 +44,30 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         public PointD(double x, double y)
         {
-            X = x;
-            Y = y;
+            this.x = x;
+            this.y = y;
         }
+
+
 
         /// <summary>
         /// empty point
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IsEmpty => X == 0d && Y == 0d;
+        public bool IsEmpty => x == 0d && y == 0d;
 
         /// <summary>
         /// X
         /// </summary>
         [DataMember]
-        public double X { get; set; }
+        public double X { get => x; set => x = value; }
 
         /// <summary>
         /// Y
         /// </summary>
         [DataMember]
-        public double Y { get; set; }
+        public double Y { get => y; set => y = value; }
 
         /// <summary>
         /// add
@@ -66,7 +78,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public PointD Add(VectorD vector)
         {
-            return new PointD(X + vector.X, Y + vector.Y);
+            return new PointD(x + vector.X, y + vector.Y);
         }
 
         /// <summary>
@@ -78,7 +90,7 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public PointD Subtract(VectorD vector)
         {
-            return new PointD(X - vector.X, Y - vector.Y);
+            return new PointD(x - vector.X, y - vector.Y);
         }
 
         /// <summary>
@@ -90,8 +102,8 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void Offset(double dx, double dy)
         {
-            X += dx;
-            Y += dy;
+            x += dx;
+            y += dy;
         }
 
         /// <summary>
@@ -102,8 +114,8 @@ namespace Xtremly.Core.Geometry2D
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void Offset(PointD p)
         {
-            X += p.X;
-            Y += p.Y;
+            x += p.X;
+            y += p.Y;
         }
 
         /// <summary>
@@ -112,7 +124,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override string ToString()
         {
-            return $"({X},{Y})";
+            return $"({x},{y})";
         }
 
         /// <summary>
@@ -123,7 +135,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static PointD operator +(PointD pt, VectorD vector)
         {
-            return new PointD(pt.X + vector.X, pt.Y + vector.Y);
+            return new PointD(pt.x + vector.X, pt.y + vector.Y);
         }
 
         /// <summary>
@@ -134,7 +146,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static PointD operator -(PointD pt, VectorD point)
         {
-            return new PointD(pt.X - point.X, pt.Y - point.Y);
+            return new PointD(pt.x - point.X, pt.y - point.Y);
         }
 
         /// <summary>
@@ -144,7 +156,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static PointD operator -(PointD point)
         {
-            return new PointD(-point.X, -point.Y);
+            return new PointD(-point.x, -point.y);
         }
 
         /// <summary>
@@ -155,7 +167,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static PointD operator +(PointD pt, PointD point)
         {
-            return new PointD(pt.X + point.X, pt.Y + point.Y);
+            return new PointD(pt.x + point.x, pt.y + point.y);
         }
 
         /// <summary>
@@ -166,7 +178,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static PointD operator -(PointD pt, PointD vector)
         {
-            return new PointD(pt.X - vector.X, pt.Y - vector.Y);
+            return new PointD(pt.x - vector.X, pt.y - vector.Y);
         }
 
         /// <summary>
@@ -177,7 +189,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator ==(PointD left, PointD right)
         {
-            return left.X == right.X && left.Y == right.Y;
+            return left.x == right.x && left.y == right.y;
         }
 
         /// <summary>
@@ -188,7 +200,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator !=(PointD left, PointD right)
         {
-            return left.X != right.X || left.Y != right.Y;
+            return left.x != right.x || left.y != right.y;
         }
 
 
@@ -205,7 +217,7 @@ namespace Xtremly.Core.Geometry2D
                 return false;
             }
 
-            return X == p1.X && Y == p1.Y;
+            return x == p1.x && y == p1.y;
         }
 
         /// <summary>
@@ -214,7 +226,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return X.GetHashCode() ^ Y.GetHashCode();
+            return x.GetHashCode() ^ y.GetHashCode();
         }
 
         /// <summary>
@@ -224,7 +236,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public string Format(int retainDecimalPlaces = 2)
         {
-            return $"{Math.Round(X, retainDecimalPlaces)},{Math.Round(Y, retainDecimalPlaces)}";
+            return $"{Math.Round(x, retainDecimalPlaces)},{Math.Round(y, retainDecimalPlaces)}";
         }
 
         /// <summary>
@@ -234,7 +246,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public PointD Round(int retainDecimalPlaces = 2)
         {
-            return new PointD(Math.Round(X, retainDecimalPlaces), Math.Round(Y, retainDecimalPlaces));
+            return new PointD(Math.Round(x, retainDecimalPlaces), Math.Round(y, retainDecimalPlaces));
         }
 
         /// <summary>
@@ -243,7 +255,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public VectorD ToVector()
         {
-            return new VectorD(X, Y);
+            return new VectorD(x, y);
         }
 
         /// <summary>
@@ -253,8 +265,8 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public double GetDistance(PointD point2)
         {
-            double x2 = Math.Pow(X - point2.X, 2);
-            double y2 = Math.Pow(Y - point2.Y, 2);
+            double x2 = Math.Pow(x - point2.x, 2);
+            double y2 = Math.Pow(x - point2.x, 2);
 
             return Math.Sqrt(x2 + y2);
         }

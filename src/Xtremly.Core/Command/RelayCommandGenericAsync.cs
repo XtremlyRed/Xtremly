@@ -71,7 +71,7 @@ namespace Xtremly.Core
         {
             if (parameter is not TParameter target)
             {
-                return false;
+                return true;
             }
 
             bool able = CanExecute(target);
@@ -86,12 +86,7 @@ namespace Xtremly.Core
         /// <returns></returns>
         public bool CanExecute(TParameter parameter)
         {
-            if (canExecuteFunc is null)
-            {
-                return true;
-            }
-
-            bool able = canExecuteFunc.Invoke(parameter);
+            bool able = canExecuteFunc?.Invoke(parameter) ?? true;
 
             return able;
         }

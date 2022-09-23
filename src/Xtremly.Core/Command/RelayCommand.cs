@@ -95,14 +95,7 @@ namespace Xtremly.Core
         /// <returns></returns>
         public bool CanExecute()
         {
-            if (canExecuteFunc is null)
-            {
-                return true;
-            }
-
-            bool abls = canExecuteFunc.Invoke();
-
-            return abls;
+            return canExecuteFunc?.Invoke() ?? true;
         }
 
         /// <summary>

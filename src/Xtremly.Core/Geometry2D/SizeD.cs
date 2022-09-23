@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -16,6 +17,14 @@ namespace Xtremly.Core.Geometry2D
     [ComVisible(true)]
     public struct SizeD
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private   double width;
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        private   double height;
+
         /// <summary>
         /// empty size
         /// </summary>
@@ -28,8 +37,18 @@ namespace Xtremly.Core.Geometry2D
         /// <param name="height"></param>
         public SizeD(double width, double height)
         {
-            Width = width;
-            Height = height;
+            this.width = width;
+            this.height = height;
+        }
+
+        /// <summary>
+        /// create new size object
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public SizeD()
+        {
+            width = height = 0;
         }
 
         /// <summary>
@@ -37,20 +56,20 @@ namespace Xtremly.Core.Geometry2D
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public bool IsEmpty => Width == 0d && Height == 0d;
+        public bool IsEmpty => width == 0d && height == 0d;
 
 
         /// <summary>
         /// width
         /// </summary>
         [DataMember]
-        public double Width { get; set; }
+        public double Width { get => width; set => width = value; }
 
         /// <summary>
         /// height
         /// </summary>
         [DataMember]
-        public double Height { get; set; }
+        public double Height  { get => height; set => height = value; }
 
 
         /// <summary>
@@ -60,7 +79,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static double GetArea(SizeD size)
         {
-            return size.Width * size.Height;
+            return size.width * size.height;
         }
 
         /// <summary>
@@ -69,7 +88,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override string ToString()
         {
-            return $"({Width},{Height})";
+            return $"({width},{height})";
         }
 
         /// <summary>
@@ -80,7 +99,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static SizeD operator +(SizeD sz1, SizeD sz2)
         {
-            return new SizeD(sz1.Width + sz2.Width, sz1.Height + sz2.Height);
+            return new SizeD(sz1.width + sz2.width, sz1.height + sz2.height);
         }
 
         /// <summary>
@@ -91,7 +110,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static SizeD operator -(SizeD sz1, SizeD sz2)
         {
-            return new SizeD(sz1.Width - sz2.Width, sz1.Height - sz2.Height);
+            return new SizeD(sz1.width - sz2.width, sz1.height - sz2.height);
         }
 
         /// <summary>
@@ -102,7 +121,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator ==(SizeD sz1, SizeD sz2)
         {
-            return sz1.Width == sz2.Width && sz1.Height == sz2.Height;
+            return sz1.width == sz2.width && sz1.height == sz2.height;
         }
 
         /// <summary>
@@ -113,7 +132,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public static bool operator !=(SizeD sz1, SizeD sz2)
         {
-            return sz1.Width != sz2.Width || sz1.Height != sz2.Height;
+            return sz1.width != sz2.width || sz1.height != sz2.height;
         }
 
         /// <summary>
@@ -123,7 +142,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            return obj is SizeD size && Width == size.Width && Height == size.Height;
+            return obj is SizeD size && width == size.width && height == size.height;
         }
 
         /// <summary>
@@ -132,7 +151,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return Width.GetHashCode() ^ Height.GetHashCode();
+            return width.GetHashCode() ^ height.GetHashCode();
         }
 
 
@@ -143,7 +162,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public string Format(int retainDecimalPlaces = 2)
         {
-            return $"{Math.Round(Width, retainDecimalPlaces)},{Math.Round(Height, retainDecimalPlaces)}";
+            return $"{Math.Round(width, retainDecimalPlaces)},{Math.Round(height, retainDecimalPlaces)}";
         }
 
         /// <summary>
@@ -153,7 +172,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public SizeD Round(int retainDecimalPlaces = 2)
         {
-            return new SizeD(Math.Round(Width, retainDecimalPlaces), Math.Round(Height, retainDecimalPlaces));
+            return new SizeD(Math.Round(width, retainDecimalPlaces), Math.Round(height, retainDecimalPlaces));
         }
 
         /// <summary>
@@ -162,7 +181,7 @@ namespace Xtremly.Core.Geometry2D
         /// <returns></returns>
         public PointD ToPoint()
         {
-            return new PointD(Width, Height);
+            return new PointD(width, height);
         }
     }
 }

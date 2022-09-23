@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Markup;
-[assembly: XmlnsDefinition("https://xtremly-library.org/", "Xtremly.Core")]
+[assembly: XmlnsDefinition("http://xtremly-library.org/", "Xtremly.Core")]
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
