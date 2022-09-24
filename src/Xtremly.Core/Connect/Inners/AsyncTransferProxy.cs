@@ -18,8 +18,11 @@ namespace Xtremly.Core.Connect
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private ConcurrentStack<SocketAsyncEventArgs> socketArgsStack = new();
+        private ConcurrentStack<SocketAsyncEventArgs> socketArgsAutoStack = new();
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private ConcurrentStack<SocketAsyncEventArgs> socketArgsManualStack = new();
         /// <summary>
         /// new
         /// </summary>
@@ -36,18 +39,36 @@ namespace Xtremly.Core.Connect
         /// <param name="e"></param>
         private void SendCompleted(object sender, SocketAsyncEventArgs e)
         {
-            Release(e);
+            socketArgsAutoStack.Push(e);
         }
 
 
         #region Public Methods
+
         /// <summary>
         /// Popup
         /// </summary>
         /// <returns></returns>
-        public SocketAsyncEventArgs PopupEventArgs()
+        public SocketAsyncEventArgs Rent()
         {
-            if (socketArgsStack.TryPop(out SocketAsyncEventArgs e))
+            if (socketArgsManualStack.TryPop(out SocketAsyncEventArgs e))
+            {
+                return e;
+            }
+
+            e = new SocketAsyncEventArgs();
+            e.SetBuffer(new byte[bufferSize], 0, bufferSize);
+            return e;
+        }
+
+
+        /// <summary>
+        /// Popup
+        /// </summary>
+        /// <returns></returns>
+        private SocketAsyncEventArgs AutoRent()
+        {
+            if (socketArgsAutoStack.TryPop(out SocketAsyncEventArgs e))
             {
                 return e;
             }
@@ -61,9 +82,9 @@ namespace Xtremly.Core.Connect
         /// release
         /// </summary>
         /// <param name="e"></param>
-        public void Release(SocketAsyncEventArgs e)
+        public void Return(SocketAsyncEventArgs e)
         {
-            socketArgsStack.Push(e);
+            socketArgsManualStack.Push(e);
         }
         /// <summary>
         /// sned async
@@ -87,7 +108,7 @@ namespace Xtremly.Core.Connect
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
 
-            SocketAsyncEventArgs e = PopupEventArgs();
+            SocketAsyncEventArgs e = AutoRent();
             e.RemoteEndPoint = socket.RemoteEndPoint ?? throw new ArgumentNullException("endPoint");
 
             Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
@@ -96,7 +117,7 @@ namespace Xtremly.Core.Connect
 
             if (socket.SendToAsync(e) == false)
             {
-                Release(e);
+                socketArgsAutoStack.Push(e);
             }
         }
 
@@ -122,7 +143,7 @@ namespace Xtremly.Core.Connect
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
 
-            SocketAsyncEventArgs e = PopupEventArgs();
+            SocketAsyncEventArgs e = AutoRent();
             e.RemoteEndPoint = endPoint ?? throw new ArgumentNullException("endPoint");
 
             Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
@@ -131,7 +152,7 @@ namespace Xtremly.Core.Connect
 
             if (socket.SendToAsync(e) == false)
             {
-                Release(e);
+                socketArgsAutoStack.Push(e);
             }
         }
 
@@ -140,8 +161,12 @@ namespace Xtremly.Core.Connect
         /// </summary>
         public void Dispose()
         {
-            socketArgsStack?.Clear();
-            socketArgsStack = null;
+            socketArgsAutoStack?.ForEach(x => x.Completed -= SendCompleted);
+            socketArgsAutoStack?.Clear();
+            socketArgsAutoStack = null;
+
+            socketArgsManualStack?.Clear();
+            socketArgsManualStack = null;
         }
         #endregion
     }

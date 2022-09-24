@@ -1,4 +1,6 @@
-﻿namespace Xtremly.Core.Connect
+﻿using Xtremly.Core.Connect;
+
+namespace Xtremly.Core 
 {
     /// <summary>
     ///  Connect Builder
