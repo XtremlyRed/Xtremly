@@ -4,13 +4,18 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
-using Xtremly.Core.Connect;
-
 namespace Xtremly.Core.Connect
 {
+
+    /// <summary>
+    /// message send proxy
+    /// </summary>
     [DebuggerDisplay("{RemoteEndPoint}")]
-    internal class MessageTransfer : IMessageTransfer
+    public class MessageTransfer : IMessageTransfer
     {
+        /// <summary>
+        /// remote end point
+        /// </summary>
         public EndPoint RemoteEndPoint { get; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -25,7 +30,7 @@ namespace Xtremly.Core.Connect
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Socket socket;
 
-        public MessageTransfer(Socket socket, AsyncTransferProxy asyncSendPool, Action disposeChecker)
+        internal MessageTransfer(Socket socket, AsyncTransferProxy asyncSendPool, Action disposeChecker)
         {
             this.socket = socket;
             RemoteEndPoint = socket?.RemoteEndPoint;
@@ -33,7 +38,7 @@ namespace Xtremly.Core.Connect
             this.disposeChecker = disposeChecker;
         }
 
-        public MessageTransfer(Socket socket, EndPoint remoteEndPoint, AsyncTransferProxy asyncSendPool, Action disposeChecker)
+        internal MessageTransfer(Socket socket, EndPoint remoteEndPoint, AsyncTransferProxy asyncSendPool, Action disposeChecker)
         {
             this.socket = socket;
             RemoteEndPoint = remoteEndPoint;
@@ -41,6 +46,15 @@ namespace Xtremly.Core.Connect
             this.disposeChecker = disposeChecker;
         }
 
+        /// <summary>
+        /// message sender
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public IMessageTransfer Transfer(byte[] buffer, int offset, int length)
         {
             disposeChecker?.Invoke();

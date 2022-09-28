@@ -7,7 +7,7 @@ namespace Xtremly.Core
 {
     public class TargetTypeConverter<TargetType, ParamType> : TypeConverter
     {
-        private static readonly char[] ConnectChar = new char[] { '‘', '’', '。', '（', '）', '(', ')', '<', '>', '《', '》', '{', '}', '[', ']', ',', '，', '`', '~', '*', '/', '^', '`', '·', '\'', ';', '；', ':', '：', '\\', ' ' };
+        private static readonly char[] ConnectChar = new char[] { '‘', '’', '。', '（', '）', '(', ')', '<', '>', '《', '》', '{', '}', '[', ']', ',', '，', '`', '~', '*', '^', '`', '·', ';', '；', ':', '：', ' ' };
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
@@ -51,7 +51,7 @@ namespace Xtremly.Core
 
     public class TargetTypeArrayConverter<TargetType, ParamType> : TypeConverter
     {
-        private static readonly char[] ConnectChar = new char[] { '‘', '’', '。', '（', '）', '(', ')', '<', '>', '《', '》', '{', '}', '[', ']', ',', '，', '`', '~', '*', '/', '^', '`', '·', '\'', ';', '；', ':', '：', '\\', ' ' };
+        private static readonly char[] ConnectChar = new char[] { '‘', '’', '。', '（', '）', '(', ')', '<', '>', '《', '》', '{', '}', '[', ']', ',', '，', '`', '~', '*', '^', '`', '·', ';', '；', ':', '：', ' ' };
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {

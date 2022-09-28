@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
@@ -15,15 +16,15 @@ namespace Xtremly.Core.Connect
     {
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private const int Int32Size = sizeof(int);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly EndPoint emptyEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly ConnectConfiguration connectConfiguration;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Socket socket;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -39,7 +40,15 @@ namespace Xtremly.Core.Connect
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private int receviePoolSize;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private Action<IMessageTransfer> acceptCallback;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Dictionary<Socket, AsyncUserToken> socketBufferPool = new();
 
         /// <summary>
         /// create tcp connect by  <paramref name="connectConfiguration"/>
@@ -51,14 +60,14 @@ namespace Xtremly.Core.Connect
         }
         void ITcpServer.RunAsync()
         {
-            SocketBuilder();
+            Socket socket = SocketBuilder();
 
             if (backlog <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(backlog));
             }
             socket.Listen(backlog);
-            BeginAccept();
+            AcceptAsync(socket);
         }
 
 
@@ -69,20 +78,28 @@ namespace Xtremly.Core.Connect
         /// <exception cref="ArgumentNullException"></exception>
         IMessageTransfer ITcpConnect.RunAsync()
         {
-            SocketBuilder();
+            Socket socket = SocketBuilder();
 
             if (connectConfiguration.remoteEndPoint is null)
             {
                 throw new ArgumentNullException(nameof(connectConfiguration.remoteEndPoint));
             }
 
-            BeginReceive(connectConfiguration.remoteEndPoint, socket);
+            SocketAsyncEventArgs socketConnectArgs = new()
+            {
+                RemoteEndPoint = connectConfiguration.remoteEndPoint,
+                UserToken = socket
+            };
+
+            bool connectResult = socket.ConnectAsync(socketConnectArgs);
+
+            BeginRecevieMessage(socket);
 
             return new MessageTransfer(socket, asyncSendPool, ThrowIfDisopsed);
         }
 
 
-        private void SocketBuilder()
+        private Socket SocketBuilder()
         {
             if (connectConfiguration.localEndPoint is null)
             {
@@ -96,11 +113,12 @@ namespace Xtremly.Core.Connect
 
             asyncSendPool = new AsyncTransferProxy(connectConfiguration.bufferSize);
 
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Socket socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             socket.Bind(connectConfiguration.localEndPoint);
             socket.DontFragment = true;
 
+            return socket;
         }
 
         /// <summary>
@@ -125,117 +143,17 @@ namespace Xtremly.Core.Connect
             return this;
         }
 
-
-        private void BeginAccept()
+        ITcpServer ITcpServer.UseReceviePoolSize(int receviePoolSize)
         {
-            socket.BeginAccept(asyncResult =>
-            {
-                if (asyncResult.IsCompleted)
-                {
-                    Task.Factory.StartNew(() =>
-                    {
-                        Socket acceptSocket = socket.EndAccept(asyncResult);
-
-                        BeginReceive(acceptSocket.RemoteEndPoint, acceptSocket);
-
-                        if (acceptCallback != null)
-                        {
-                            var messageTransfer = new MessageTransfer(acceptSocket, asyncSendPool, ThrowIfDisopsed);
-                            acceptCallback.Invoke(messageTransfer);
-                        }
-                    }, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
-                }
-
-                BeginAccept();
-
-            }, socket);
+            this.receviePoolSize = receviePoolSize;
+            return this;
         }
 
-        private void BeginReceive(EndPoint remoteEndPoint, Socket socket)
+
+        ITcpConnect ITcpConnect.UseReceviePoolSize(int receviePoolSize)
         {
-
-            if (socket.RemoteEndPoint is null)
-            {
-                SocketAsyncEventArgs socketConnectArgs = new()
-                {
-                    RemoteEndPoint = remoteEndPoint,
-                    UserToken = socket
-                };
-
-                bool connectResult = socket.ConnectAsync(socketConnectArgs);
-                if (connectResult)
-                {
-                    socketConnectArgs.Dispose();
-                }
-            }
-
-            SocketAsyncEventArgs socketArgs = asyncSendPool.Rent();
-            socketArgs.RemoteEndPoint = remoteEndPoint;
-            socketArgs.UserToken = socket;
-            socketArgs.Completed += EndReceive;
-            BeginReceive(socketArgs);
-        }
-
-        /// <summary>
-        /// 异步接收数据
-        /// </summary>
-        /// <param name="e"></param>
-        private void BeginReceive(SocketAsyncEventArgs e)
-        {
-            ThrowIfDisopsed();
-
-            if (e.UserToken is Socket acceptSocket)
-            {
-                if (acceptSocket.ReceiveFromAsync(e) == false)
-                {
-                    //EndReceive(acceptSocket, e);
-                }
-            }
-        }
-
-        /// <summary>
-        /// completed handle
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void EndReceive(object sender, SocketAsyncEventArgs e)
-        {
-            e.Completed -= EndReceive;
-
-            ThrowIfDisopsed();
-
-            if (e.UserToken is Socket socket)
-            {
-                BeginReceive(socket.RemoteEndPoint, socket);
-            }
-
-
-            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
-            {
-                byte[] currentReceviedBuffer = new byte[e.BytesTransferred];
-
-                Buffer.BlockCopy(e.Buffer, 0, currentReceviedBuffer, 0, e.BytesTransferred);
-
-                MessageTransfer transfer = new(e.UserToken as Socket, asyncSendPool, ThrowIfDisopsed);
-
-                Task.Factory.StartNew(() =>
-                {
-                    try
-                    {
-                        connectConfiguration.recevieCallback?.Invoke(transfer, currentReceviedBuffer);
-
-                        currentReceviedBuffer = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        connectConfiguration.errorCallback?.Invoke(ex);
-                    }
-                }, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
-
-            }
-
-            asyncSendPool.Return(e);
-
+            this.receviePoolSize = receviePoolSize;
+            return this;
         }
 
         private void ThrowIfDisopsed()
@@ -252,12 +170,238 @@ namespace Xtremly.Core.Connect
         public void Dispose()
         {
             isDisposed = true;
-            socket?.Close();
-            socket?.Dispose();
-            socket = null;
-
             asyncSendPool?.Dispose();
             asyncSendPool = null;
+            socketBufferPool?.ForEach(i =>
+            {
+                try
+                {
+                    i.Value.Dispose();
+                    i.Key.Close();
+                    i.Key.Dispose();
+                }
+                catch
+                {
+                }
+            });
         }
+
+
+        #region  accept
+
+          
+        private void AcceptAsync(Socket socket)
+        {
+            SocketAsyncEventArgs socketAsyncEventArgs = new();
+            socketAsyncEventArgs.Completed += AcceptAsyncEventArgs_Completed;
+            socketAsyncEventArgs.UserToken = socket;
+            if (!socket.AcceptAsync(socketAsyncEventArgs))
+            {
+                AcceptAsyncEventArgs_Completed(null, socketAsyncEventArgs);
+            }
+        }
+
+        private void AcceptAsyncEventArgs_Completed(object sender, SocketAsyncEventArgs acceptEventArgs)
+        {
+            acceptEventArgs.Completed -= AcceptAsyncEventArgs_Completed;
+
+            BeginRecevieMessage(acceptEventArgs.AcceptSocket);
+
+            Task.Factory.StartNew(() =>
+            {
+                if (acceptCallback != null)
+                {
+                    MessageTransfer messageTransfer = new(acceptEventArgs.AcceptSocket, asyncSendPool, ThrowIfDisopsed);
+                    acceptCallback.Invoke(messageTransfer);
+                }
+            }, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+
+            if (acceptEventArgs.SocketError == SocketError.OperationAborted)
+            {
+                return;
+            }
+
+            AcceptAsync(acceptEventArgs.UserToken as Socket);
+        }
+
+        private void BeginRecevieMessage(Socket socket)
+        {
+            if (socketBufferPool.TryGetValue(socket, out AsyncUserToken userToken) == false)
+            {
+                userToken = new AsyncUserToken
+                {
+                    BufferPool = new AnnularPool<byte>(receviePoolSize),
+                    PacketLength = 0,
+                    Socket = socket,
+                    ConnectTime = DateTime.Now
+                };
+                if (socket.RemoteEndPoint is IPEndPoint endPoint)
+                {
+                    userToken.IpEndPoint = endPoint;
+                }
+                socketBufferPool[socket] = userToken;
+            }
+
+            SocketAsyncEventArgs recevieEventArgs = asyncSendPool.Rent();
+
+            recevieEventArgs.UserToken = userToken;
+            recevieEventArgs.Completed += IO_Completed;
+
+            if (socket.ReceiveAsync(recevieEventArgs) == false)
+            {
+                RecevieMessage(recevieEventArgs);
+            }
+        }
+
+        private void RecevieMessage(SocketAsyncEventArgs recevieEventArgs)
+        {
+            if (recevieEventArgs.UserToken is not AsyncUserToken userToken)
+            {
+                return;
+            }
+
+            recevieEventArgs.Completed -= IO_Completed;
+
+            if (recevieEventArgs.BytesTransferred > 0 && recevieEventArgs.SocketError == SocketError.Success)
+            {
+                userToken.BufferPool.Write(recevieEventArgs.Buffer, recevieEventArgs.Offset, recevieEventArgs.BytesTransferred);
+
+                do
+                {
+                    int canReadLength = userToken.BufferPool.CanReadLength;
+
+                    if (canReadLength == 0)
+                    {
+                        break;
+                    }
+
+                    if (userToken.PacketLength == 0)
+                    {
+                        if (canReadLength < Int32Size)
+                        {
+                            break;
+                        }
+
+                        byte[] intbytes = new byte[Int32Size];
+
+                        userToken.BufferPool.Read(intbytes, 0, intbytes.Length);
+
+                        canReadLength -= Int32Size;
+
+                        userToken.PacketLength = BitConverter.ToInt32(intbytes, 0);
+
+                        userToken.PacketBuffer = new byte[userToken.PacketLength];
+                    }
+
+                    if (canReadLength >= 0)
+                    {
+                        int plusBufferLength = userToken.PacketLength - userToken.PacketOffset;
+                        if (plusBufferLength <= canReadLength)
+                        {
+                            userToken.BufferPool.Read(userToken.PacketBuffer, userToken.PacketOffset, plusBufferLength);
+                            userToken.PacketOffset += plusBufferLength;
+                        }
+                        else
+                        {
+                            userToken.BufferPool.Read(userToken.PacketBuffer, userToken.PacketOffset, canReadLength);
+                            userToken.PacketOffset += canReadLength;
+                        }
+
+                        if (userToken.PacketOffset != userToken.PacketLength)
+                        {
+                            continue;
+                        }
+
+                        byte[] packetBuffer = userToken.PacketBuffer;
+                        userToken.PacketBuffer = null;
+                        userToken.PacketLength = userToken.PacketOffset = 0;
+
+                        Task.Factory.StartNew(() =>
+                        {
+                            try
+                            {
+                                MessageTransfer transfer = new(userToken.Socket, asyncSendPool, ThrowIfDisopsed);
+
+                                connectConfiguration.recevieCallback?.Invoke(transfer, packetBuffer);
+                            }
+                            catch (Exception ex)
+                            {
+                                connectConfiguration.errorCallback?.Invoke(ex);
+                            }
+                        }, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+
+                        continue;
+                    }
+
+                    break;
+
+                } while (true);
+
+                asyncSendPool.Return(recevieEventArgs);
+
+                BeginRecevieMessage(userToken.Socket);
+            }
+        }
+
+        private void IO_Completed(object sender, SocketAsyncEventArgs e)
+        {
+            // determine which type of operation just completed and call the associated handler  
+            switch (e.LastOperation)
+            {
+                case SocketAsyncOperation.Receive:
+                    RecevieMessage(e);
+                    break;
+                case SocketAsyncOperation.Send:
+                    ProcessSend(e);
+                    break;
+                default:
+                    throw new ArgumentException("The last operation completed on the socket was not a receive or send");
+            }
+        }
+
+        private void ProcessSend(SocketAsyncEventArgs socketEventArys)
+        {
+            if (socketEventArys.SocketError == SocketError.Success)
+            {
+                AsyncUserToken asyncToken = (AsyncUserToken)socketEventArys.UserToken;
+                bool willRaiseEvent = asyncToken.Socket.ReceiveAsync(socketEventArys);
+                if (!willRaiseEvent)
+                {
+                    RecevieMessage(socketEventArys);
+                }
+
+                return;
+            }
+
+            socketEventArys.Completed -= IO_Completed;
+            if (socketEventArys.UserToken is AsyncUserToken token && socketBufferPool.ContainsKey(token.Socket))
+            {
+                socketBufferPool.Remove(token.Socket);
+            }
+            CloseClientSocket(socketEventArys);
+
+        }
+
+        //关闭客户端  
+        private void CloseClientSocket(SocketAsyncEventArgs socketEventArys)
+        {
+            AsyncUserToken token = socketEventArys.UserToken as AsyncUserToken;
+
+            try
+            {
+                token.Socket.Shutdown(SocketShutdown.Send);
+            }
+            catch (Exception)
+            {
+
+            }
+            token.Socket.Close();
+
+            socketEventArys.UserToken = null;
+        }
+
+
+
+        #endregion
     }
 }

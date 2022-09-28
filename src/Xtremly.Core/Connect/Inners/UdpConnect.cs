@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Xtremly.Core.Connect
 {
     /// <summary>
-    /// 
+    /// UdpConnect
     /// </summary>
     public class UdpConnect : IUdpConnect
     {
@@ -28,7 +28,7 @@ namespace Xtremly.Core.Connect
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private AsyncTransferProxy asyncSendPool;
+        private AsyncTransferProxy asyncTransferProxy;
 
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -67,7 +67,7 @@ namespace Xtremly.Core.Connect
             socket.Bind(connectConfiguration.localEndPoint);
             socket.DontFragment = true;
 
-            asyncSendPool = new AsyncTransferProxy(connectConfiguration.bufferSize);
+            asyncTransferProxy = new AsyncTransferProxy(connectConfiguration.bufferSize);
 
             SocketAsyncEventArgs socketArgs = new();
             socketArgs.SetBuffer(new byte[connectConfiguration.bufferSize], 0, connectConfiguration.bufferSize);
@@ -75,7 +75,7 @@ namespace Xtremly.Core.Connect
             socketArgs.RemoteEndPoint = emptyEndPoint;
             BeginReceive(socketArgs);
 
-            return new MessageTransfer(socket, connectConfiguration.remoteEndPoint, asyncSendPool, ThrowIfDisopsed);
+            return new MessageTransfer(socket, connectConfiguration.remoteEndPoint, asyncTransferProxy, ThrowIfDisopsed);
         }
 
 
@@ -107,7 +107,7 @@ namespace Xtremly.Core.Connect
 
                 Buffer.BlockCopy(e.Buffer, 0, currentReceviedBuffer, 0, e.BytesTransferred);
 
-                MessageTransfer tran = new(socket, connectConfiguration.remoteEndPoint, asyncSendPool, ThrowIfDisopsed);
+                MessageTransfer tran = new(socket, connectConfiguration.remoteEndPoint, asyncTransferProxy, ThrowIfDisopsed);
 
                 Task.Factory.StartNew(() =>
                 {

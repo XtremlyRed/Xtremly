@@ -1,10 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Xtremly.Core
 {
@@ -13,6 +7,9 @@ namespace Xtremly.Core
     /// </summary>
     public interface ITcpConnect : ITcpServer
     {
+
+        new ITcpConnect UseReceviePoolSize(int receviePoolSize);
+
         /// <summary>
         /// startup tcp connect
         /// </summary>
@@ -27,6 +24,9 @@ namespace Xtremly.Core
     /// </summary>
     public interface ITcpServer
     {
+
+        ITcpServer UseReceviePoolSize(int receviePoolSize);
+
         /// <summary>
         /// accept socket 
         /// </summary>

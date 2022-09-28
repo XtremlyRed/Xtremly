@@ -55,8 +55,7 @@ namespace Xtremly.Core.Connect
             {
                 return e;
             }
-
-            e = new SocketAsyncEventArgs();
+            e = new SocketAsyncEventArgs(); 
             e.SetBuffer(new byte[bufferSize], 0, bufferSize);
             return e;
         }
@@ -111,9 +110,18 @@ namespace Xtremly.Core.Connect
             SocketAsyncEventArgs e = AutoRent();
             e.RemoteEndPoint = socket.RemoteEndPoint ?? throw new ArgumentNullException("endPoint");
 
-            Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
-
-            e.SetBuffer(0, length);
+            if (socket.ProtocolType == ProtocolType.Tcp)
+            {
+                var lengthBytes = BitConverter.GetBytes(length);
+                Buffer.BlockCopy(lengthBytes, 0, e.Buffer, 0, lengthBytes.Length);
+                Buffer.BlockCopy(buffer, offset, e.Buffer, lengthBytes.Length, length);
+                e.SetBuffer(0, length + lengthBytes.Length);
+            }
+            else
+            {
+                Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
+                e.SetBuffer(0, length);
+            }
 
             if (socket.SendToAsync(e) == false)
             {
@@ -146,9 +154,18 @@ namespace Xtremly.Core.Connect
             SocketAsyncEventArgs e = AutoRent();
             e.RemoteEndPoint = endPoint ?? throw new ArgumentNullException("endPoint");
 
-            Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
-
-            e.SetBuffer(0, length);
+            if (socket.ProtocolType == ProtocolType.Tcp)
+            {
+                var lengthBytes = BitConverter.GetBytes(length);
+                Buffer.BlockCopy(lengthBytes, 0, e.Buffer, 0, lengthBytes.Length);
+                Buffer.BlockCopy(buffer, offset, e.Buffer, lengthBytes.Length, length);
+                e.SetBuffer(0, length + lengthBytes.Length);
+            }
+            else
+            {
+                Buffer.BlockCopy(buffer, offset, e.Buffer, 0, length);
+                e.SetBuffer(0, length);
+            }
 
             if (socket.SendToAsync(e) == false)
             {
