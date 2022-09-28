@@ -40,7 +40,7 @@ namespace Xtremly.Core.Connect
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private int receviePoolSize;
+        private int receviePoolSize = -1;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -109,6 +109,11 @@ namespace Xtremly.Core.Connect
             if (connectConfiguration.bufferSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(connectConfiguration.bufferSize));
+            }
+
+            if (receviePoolSize < 0)
+            {
+                receviePoolSize = connectConfiguration.bufferSize;
             }
 
             asyncSendPool = new AsyncTransferProxy(connectConfiguration.bufferSize);
@@ -189,7 +194,7 @@ namespace Xtremly.Core.Connect
 
         #region  accept
 
-          
+
         private void AcceptAsync(Socket socket)
         {
             SocketAsyncEventArgs socketAsyncEventArgs = new();
@@ -230,7 +235,7 @@ namespace Xtremly.Core.Connect
             {
                 userToken = new AsyncUserToken
                 {
-                    BufferPool = new AnnularPool<byte>(receviePoolSize),
+                    BufferPool = new AsyncUserToken.ByteAnnularPool(receviePoolSize),
                     PacketLength = 0,
                     Socket = socket,
                     ConnectTime = DateTime.Now
@@ -266,6 +271,8 @@ namespace Xtremly.Core.Connect
             {
                 userToken.BufferPool.Write(recevieEventArgs.Buffer, recevieEventArgs.Offset, recevieEventArgs.BytesTransferred);
 
+
+
                 do
                 {
                     int canReadLength = userToken.BufferPool.CanReadLength;
@@ -282,15 +289,14 @@ namespace Xtremly.Core.Connect
                             break;
                         }
 
-                        byte[] intbytes = new byte[Int32Size];
-
-                        userToken.BufferPool.Read(intbytes, 0, intbytes.Length);
+                        userToken.BufferPool.Read(userToken.PacketLengthBuffer, 0, userToken.PacketLengthBuffer.Length);
 
                         canReadLength -= Int32Size;
 
-                        userToken.PacketLength = BitConverter.ToInt32(intbytes, 0);
-
+                        userToken.PacketLength = BitConverter.ToInt32(userToken.PacketLengthBuffer, 0);
+                         
                         userToken.PacketBuffer = new byte[userToken.PacketLength];
+                         
                     }
 
                     if (canReadLength >= 0)
@@ -313,13 +319,15 @@ namespace Xtremly.Core.Connect
                         }
 
                         byte[] packetBuffer = userToken.PacketBuffer;
-                        userToken.PacketBuffer = null;
+
                         userToken.PacketLength = userToken.PacketOffset = 0;
 
                         Task.Factory.StartNew(() =>
                         {
                             try
                             {
+
+
                                 MessageTransfer transfer = new(userToken.Socket, asyncSendPool, ThrowIfDisopsed);
 
                                 connectConfiguration.recevieCallback?.Invoke(transfer, packetBuffer);
@@ -337,9 +345,10 @@ namespace Xtremly.Core.Connect
 
                 } while (true);
 
+                BeginRecevieMessage(userToken.Socket);
+
                 asyncSendPool.Return(recevieEventArgs);
 
-                BeginRecevieMessage(userToken.Socket);
             }
         }
 

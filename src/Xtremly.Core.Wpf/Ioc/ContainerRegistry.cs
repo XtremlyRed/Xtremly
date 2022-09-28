@@ -1,51 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
-/* 项目“Xtremly.Core.Wpf (netcoreapp3.1)”的未合并的更改
-在此之前:
-using Container = Xtremly.Core.Container;
-在此之后:
-using Xtremly.Core;
-
-using Container = Xtremly.Core.Container;
-*/
-
-/* 项目“Xtremly.Core.Wpf (net7.0-windows)”的未合并的更改
-在此之前:
-using Container = Xtremly.Core.Container;
-在此之后:
-using Xtremly.Core;
-
-using Container = Xtremly.Core.Container;
-*/
-
-/* 项目“Xtremly.Core.Wpf (net6.0-windows)”的未合并的更改
-在此之前:
-using Container = Xtremly.Core.Container;
-在此之后:
-using Xtremly.Core;
-
-using Container = Xtremly.Core.Container;
-*/
-
-/* 项目“Xtremly.Core.Wpf (net5.0-windows)”的未合并的更改
-在此之前:
-using Container = Xtremly.Core.Container;
-在此之后:
-using Xtremly.Core;
-
-using Container = Xtremly.Core.Container;
-*/
-
-/* 项目“Xtremly.Core.Wpf (net48)”的未合并的更改
-在此之前:
-using Container = Xtremly.Core.Container;
-在此之后:
-using Xtremly.Core;
-
-using Container = Xtremly.Core.Container;
-*/
-
+using System.Diagnostics; 
 namespace Xtremly.Core
 {
     internal class ContainerRegistry : IContainerRegistry

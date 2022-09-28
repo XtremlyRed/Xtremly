@@ -12,31 +12,31 @@ namespace Xtremly.Core
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly ConcurrentDictionary<string, Mapper> mappers = new();
 
-        #region Default
+        //#region Default
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] private static IMessenger defaultInstance;
+        //[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static IMessenger defaultInstance;
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly object syncRootLock = new();
+        //[DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly object syncRootLock = new();
 
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        //[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 
-        public static IMessenger Default
-        {
-            get
-            {
-                if (defaultInstance == null)
-                {
-                    lock (syncRootLock)
-                    {
-                        defaultInstance ??= new Messenger();
-                    }
-                }
+        //public static IMessenger Default
+        //{
+        //    get
+        //    {
+        //        if (defaultInstance == null)
+        //        {
+        //            lock (syncRootLock)
+        //            {
+        //                defaultInstance ??= new Messenger();
+        //            }
+        //        }
 
-                return defaultInstance;
-            }
-        }
+        //        return defaultInstance;
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
 
 

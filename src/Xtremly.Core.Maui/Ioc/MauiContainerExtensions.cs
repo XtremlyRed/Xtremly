@@ -12,16 +12,16 @@ namespace Xtremly.Core
             {
                 return;
             }
-            ____containerForNavigation dict = container.Container.Resolve<____containerForNavigation>();
+            ContainerForNavigation dict = container.Container.Resolve<ContainerForNavigation>();
 
             Type pageType = typeof(TView);
             Type viewModelType = typeof(TViewModel);
 
             string name = string.IsNullOrWhiteSpace(navigationName) ? pageType.Name : navigationName;
 
-            if (dict.TryGetValue(name, out ____View_ViewModel_Mapper mapper) == false)
+            if (dict.TryGetValue(name, out ViewViewModelMapper mapper) == false)
             {
-                dict[name] = mapper = new ____View_ViewModel_Mapper();
+                dict[name] = mapper = new ViewViewModelMapper();
             }
 
             if (container.Container.IsRegistered(pageType) == false)
@@ -45,14 +45,14 @@ namespace Xtremly.Core
                 return;
             }
 
-            ____containerForNavigation dict = container.Container.Resolve<____containerForNavigation>();
+            ContainerForNavigation dict = container.Container.Resolve<ContainerForNavigation>();
 
             Type pageType = typeof(TView);
             string name = string.IsNullOrWhiteSpace(navigationName) ? pageType.Name : navigationName;
 
-            if (dict.TryGetValue(name, out ____View_ViewModel_Mapper mapper) == false)
+            if (dict.TryGetValue(name, out ViewViewModelMapper mapper) == false)
             {
-                dict[name] = mapper = new ____View_ViewModel_Mapper();
+                dict[name] = mapper = new ViewViewModelMapper();
             }
 
             if (container.Container.IsRegistered(pageType) == false)
@@ -65,24 +65,24 @@ namespace Xtremly.Core
 
         internal static void NavigationExtensionsRegister(this IContainerRegistry container)
         {
-            ____containerForNavigation target = new();
+            ContainerForNavigation target = new();
             container.RegisterInstance(target);
         }
 
-        internal static ____View_ViewModel_Mapper FindMapper(string targetHostName)
+        internal static ViewViewModelMapper FindMapper(string targetHostName)
         {
-            ____containerForNavigation mapper = XtremlyApplication.Provider.Resolve<____containerForNavigation>();
+            ContainerForNavigation mapper = XtremlyApplication.Provider.Resolve<ContainerForNavigation>();
 
-            return mapper.TryGetValue(targetHostName, out ____View_ViewModel_Mapper mapperType) ? mapperType : null;
+            return mapper.TryGetValue(targetHostName, out ViewViewModelMapper mapperType) ? mapperType : null;
         }
 
-        private class ____containerForNavigation
-            : Dictionary<string, ____View_ViewModel_Mapper>
+        private class ContainerForNavigation
+            : Dictionary<string, ViewViewModelMapper>
         {
 
         }
 
-        internal class ____View_ViewModel_Mapper
+        internal class ViewViewModelMapper
         {
             public Type ViewType { get; set; }
             public Type ViewModelType { get; set; }

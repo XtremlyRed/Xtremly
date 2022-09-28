@@ -16,6 +16,10 @@ namespace Xtremly.Core
         [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly NotifyCollectionChangedAction changedAction = NotifyCollectionChangedAction.Reset;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)] private const string CountString = "Count";
         [DebuggerBrowsable(DebuggerBrowsableState.Never)] private const string IndexerName = "Item[]";
+       
+        /// <summary>
+        /// 
+        /// </summary>
         public NotifiableCollection() : base()
         {
 
@@ -34,6 +38,7 @@ namespace Xtremly.Core
         /// create a new  AsyncObservableCollection by an exist collection
         /// </summary>
         /// <param name="collection">a exist collection</param>
+        /// <param name="autoNotifyWhenCollectionChanged"></param>
         public NotifiableCollection(IEnumerable<Target> collection, bool autoNotifyWhenCollectionChanged = true)
         {
             AutoNotify = autoNotifyWhenCollectionChanged;
@@ -44,6 +49,7 @@ namespace Xtremly.Core
         /// <summary>
         /// create a new  AsyncObservableCollection by an exist array
         /// </summary>
+        /// <param name="autoNotifyWhenCollectionChanged"></param>
         /// <param name="array">a exist array</param>
         public NotifiableCollection(bool autoNotifyWhenCollectionChanged, params Target[] array)
         {

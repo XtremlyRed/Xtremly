@@ -15,7 +15,7 @@ namespace Xtremly.Core
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        private readonly Target[] buffer;
+        private Target[] buffer;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -81,7 +81,7 @@ namespace Xtremly.Core
 
             if (Capacity - currentWritePosition >= length)
             {
-                Array.ConstrainedCopy(writeBuffer, offset, buffer, currentWritePosition, length);
+                BufferCopy(ref writeBuffer, offset, ref buffer, currentWritePosition, length);
 
                 WritePosition = currentWritePosition + length;
             }
@@ -91,9 +91,9 @@ namespace Xtremly.Core
 
                 int copySurplusLength = length - currentRowCanWriteLength;
 
-                Array.ConstrainedCopy(writeBuffer, offset, buffer, currentWritePosition, currentRowCanWriteLength);
+                BufferCopy(ref writeBuffer, offset, ref buffer, currentWritePosition, currentRowCanWriteLength);
 
-                Array.ConstrainedCopy(writeBuffer, offset + currentRowCanWriteLength, buffer, 0, copySurplusLength);
+                BufferCopy(ref writeBuffer, offset + currentRowCanWriteLength, ref buffer, 0, copySurplusLength);
 
                 WritePosition = copySurplusLength;
 
@@ -132,7 +132,7 @@ namespace Xtremly.Core
 
             if (Capacity - currentReadPosition >= length)
             {
-                Array.ConstrainedCopy(buffer, currentReadPosition, readBuffer, offset, length);
+                BufferCopy(ref buffer, currentReadPosition, ref readBuffer, offset, length);
 
                 ReadPosition = currentReadPosition + length;
             }
@@ -142,9 +142,9 @@ namespace Xtremly.Core
 
                 int copySurplusLength = length - currentRowCanReadLength;
 
-                Array.ConstrainedCopy(buffer, currentReadPosition, readBuffer, offset, currentRowCanReadLength);
+                BufferCopy(ref buffer, currentReadPosition, ref readBuffer, offset, currentRowCanReadLength);
 
-                Array.ConstrainedCopy(buffer, 0, readBuffer, offset + currentRowCanReadLength, copySurplusLength);
+                BufferCopy(ref buffer, 0, ref readBuffer, offset + currentRowCanReadLength, copySurplusLength);
 
                 ReadPosition = copySurplusLength;
 
@@ -152,6 +152,12 @@ namespace Xtremly.Core
 
             readTotalPos += length;
 
+        }
+
+
+        protected virtual void BufferCopy(ref Target[] sourceArray, int sourceIndex, ref Target[] destinationArray, int destinationIndex, int length)
+        {
+            Array.ConstrainedCopy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
         }
     }
 }

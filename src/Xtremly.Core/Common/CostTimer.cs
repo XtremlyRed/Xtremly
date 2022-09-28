@@ -19,6 +19,7 @@ namespace Xtremly.Core
         private readonly Stopwatch stopwatch;
 
 
+
         private CostTimer()
         {
             stopwatch = Stopwatch.StartNew();

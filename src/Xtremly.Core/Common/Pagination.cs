@@ -3,10 +3,20 @@ using System.Collections.Generic;
 
 namespace Xtremly.Core
 {
+    /// <summary>
+    /// struct of <see cref="Pagination{Target}"/>
+    /// </summary>
+    /// <typeparam name="Target"></typeparam>
     public struct Pagination<Target>
     {
+        /// <summary>
+        /// data 
+        /// </summary>
         public IEnumerable<Target> Data { get; set; }
 
+        /// <summary>
+        /// total pages
+        /// </summary>
         public int TotalPage
         {
             get
@@ -20,15 +30,32 @@ namespace Xtremly.Core
             }
         }
 
+        /// <summary>
+        /// total count
+        /// </summary>
         public int TotalCount { get; set; }
 
+        /// <summary>
+        /// current page
+        /// </summary>
         public int CurrentPage { get; set; }
 
+        
+        /// <summary>
+        /// page size
+        /// </summary>
         public int PageSize { get; set; }
 
+
+        /// <summary>
+        /// condition
+        /// </summary>
         public object Condition { get; set; }
 
-
+        /// <summary>
+        /// get <see cref="Pagination"/> not has data
+        /// </summary>
+        /// <returns></returns>
         public Pagination GetPagination()
         {
             return new Pagination()
@@ -42,8 +69,14 @@ namespace Xtremly.Core
     }
 
 
+    /// <summary>
+    /// <see cref="Pagination"/>
+    /// </summary>
     public struct Pagination
     {
+        /// <summary>
+        /// total pages
+        /// </summary>
         public int TotalPage
         {
             get
@@ -57,12 +90,24 @@ namespace Xtremly.Core
             }
         }
 
+        /// <summary>
+        /// total count
+        /// </summary>
         public int TotalCount { get; set; }
 
+        /// <summary>
+        /// current page
+        /// </summary>
         public int CurrentPage { get; set; }
 
+        /// <summary>
+        /// page size
+        /// </summary>
         public int PageSize { get; set; }
 
+        /// <summary>
+        /// condition
+        /// </summary>
         public object Condition { get; set; }
     }
 }

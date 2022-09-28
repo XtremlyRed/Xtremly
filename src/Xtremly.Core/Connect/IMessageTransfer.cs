@@ -1,10 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Sockets;
-
-using Xtremly.Core.Connect;
+﻿using System.Net;
 
 namespace Xtremly.Core
 {
@@ -16,7 +10,7 @@ namespace Xtremly.Core
         /// <summary>
         /// remote endpoint
         /// </summary>
-        public EndPoint RemoteEndPoint { get; }
+        EndPoint RemoteEndPoint { get; }
 
         /// <summary>
         /// send message to remote endpoint

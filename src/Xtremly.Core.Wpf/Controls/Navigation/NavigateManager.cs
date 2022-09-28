@@ -44,7 +44,7 @@ namespace Xtremly.Core
             {
                 throw new ArgumentNullException(nameof(targetPageName));
             }
-            WpfContainerExtensions.____View_ViewModel_Mapper mapper = WpfContainerExtensions.FindMapper(targetPageName);
+            WpfContainerExtensions.ViewViewModelMapper mapper = WpfContainerExtensions.FindMapper(targetPageName);
 
             if (mapper is null)
             {

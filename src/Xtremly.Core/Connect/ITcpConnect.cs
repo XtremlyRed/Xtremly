@@ -8,6 +8,11 @@ namespace Xtremly.Core
     public interface ITcpConnect : ITcpServer
     {
 
+        /// <summary>
+        /// recevie pool size
+        /// </summary>
+        /// <param name="receviePoolSize"></param>
+        /// <returns></returns>
         new ITcpConnect UseReceviePoolSize(int receviePoolSize);
 
         /// <summary>
@@ -25,6 +30,11 @@ namespace Xtremly.Core
     public interface ITcpServer
     {
 
+        /// <summary>
+        /// pool size
+        /// </summary>
+        /// <param name="receviePoolSize"></param>
+        /// <returns></returns>
         ITcpServer UseReceviePoolSize(int receviePoolSize);
 
         /// <summary>

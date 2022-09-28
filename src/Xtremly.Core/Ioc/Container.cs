@@ -11,9 +11,9 @@ namespace Xtremly.Core
     /// </summary>
     public class Container : IScopeContainer, IDisposable
     {
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        private static Container @default;
+        //[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //private static Container @default;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -33,24 +33,24 @@ namespace Xtremly.Core
         [EditorBrowsable(EditorBrowsableState.Never)]
         private ContainerLifetime _lifetime;
 
-        /// <summary>
-        /// default container
-        /// </summary>
-        public static Container Default
-        {
-            get
-            {
-                if (@default is null)
-                {
-                    lock (defaultSyncRoot)
-                    {
-                        @default ??= new Container();
-                    }
-                }
+        ///// <summary>
+        ///// default container
+        ///// </summary>
+        //public static Container Default
+        //{
+        //    get
+        //    {
+        //        if (@default is null)
+        //        {
+        //            lock (defaultSyncRoot)
+        //            {
+        //                @default ??= new Container();
+        //            }
+        //        }
 
-                return @default;
-            }
-        }
+        //        return @default;
+        //    }
+        //}
 
         /// <summary>
         /// Creates a new instance of IoC Container

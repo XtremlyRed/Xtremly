@@ -16,8 +16,7 @@ namespace Xtremly.Core
 
         /// <summary>
         /// Unregister all message callback from subscriber by token
-        /// </summary>
-        /// <param name="subscriber"></param>
+        /// </summary> 
         /// <param name="unregisterToken"></param>
         void Unregister(string unregisterToken);
 

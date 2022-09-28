@@ -47,7 +47,7 @@
             {
                 throw new ArgumentNullException(nameof(targetPageName));
             }
-            MauiContainerExtensions.____View_ViewModel_Mapper mapper = MauiContainerExtensions.FindMapper(targetPageName);
+            MauiContainerExtensions.ViewViewModelMapper mapper = MauiContainerExtensions.FindMapper(targetPageName);
 
             if (mapper is null)
             {

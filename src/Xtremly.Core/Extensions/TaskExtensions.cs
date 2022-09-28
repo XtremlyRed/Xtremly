@@ -62,6 +62,8 @@ namespace Xtremly.Core
         /// task  No Awaiter
         /// </summary>
         /// <param name="task"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="millisecondsTimeout"></param>
         public static void WaitComplete(this Task task, CancellationToken cancellationToken = default, int millisecondsTimeout = -1)
         {
             if (task is null)
@@ -87,6 +89,8 @@ namespace Xtremly.Core
         /// task  No Awaiter
         /// </summary>
         /// <param name="task"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="millisecondsTimeout"></param>
         public static TType WaitComplete<TType>(this Task<TType> task, CancellationToken cancellationToken = default, int millisecondsTimeout = -1)
         {
             if (task is null)
@@ -122,16 +126,16 @@ namespace Xtremly.Core
                 : collection is null
                 ? throw new ArgumentNullException(nameof(collection))
                 : Task.Factory.StartNew(() =>
-            {
-                foreach (TType item in collection)
                 {
-                    if (token.IsCancellationRequested)
+                    foreach (TType item in collection)
                     {
-                        break;
+                        if (token.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                        loopBody(item);
                     }
-                    loopBody(item);
-                }
-            }, token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+                }, token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
 
@@ -151,18 +155,18 @@ namespace Xtremly.Core
                 : collection is null
                 ? throw new ArgumentNullException(nameof(collection))
                 : Task.Factory.StartNew(() =>
-            {
-                int index = 0;
-                foreach (TType item in collection)
                 {
-                    if (token.IsCancellationRequested)
+                    int index = 0;
+                    foreach (TType item in collection)
                     {
-                        break;
+                        if (token.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                        loopBody(item, index);
+                        index++;
                     }
-                    loopBody(item, index);
-                    index++;
-                }
-            }, token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+                }, token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
     }
 }

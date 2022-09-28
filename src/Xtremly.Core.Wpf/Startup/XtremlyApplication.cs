@@ -15,7 +15,9 @@ namespace Xtremly.Core
         private Window window;
 
         public static new XtremlyApplication Current { get; private set; }
+
         public static new System.Windows.Threading.Dispatcher Dispatcher { get; private set; }
+
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static IContainerRegistry Registry { get; private set; }
@@ -56,7 +58,7 @@ namespace Xtremly.Core
         {
             Current = this;
             Dispatcher = base.Dispatcher;
-            IocContainerRegistry(Registry);
+            TypeContainerRegistry(Registry);
         }
 
         /// <summary>
@@ -83,7 +85,7 @@ namespace Xtremly.Core
         /// IocContainerRegistry
         /// </summary>
         /// <param name="registry"></param>
-        protected abstract void IocContainerRegistry(IContainerRegistry registry);
+        protected abstract void TypeContainerRegistry(IContainerRegistry registry);
 
         /// <summary>
         /// CreateMainWindow

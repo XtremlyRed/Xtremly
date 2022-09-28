@@ -54,12 +54,19 @@ namespace Xtremly.Core
             container = new byte[capacity];
         }
 
-        public ByteBuffer(byte[] existBuffer)
+        /// <summary>
+        /// create a new buffer by exist buffer
+        /// </summary>
+        /// <param name="existBuffer"></param>
+        public ByteBuffer(ref byte[] existBuffer)
         {
             capacity = existBuffer?.Length ?? 0;
             container = existBuffer;
         }
 
+        /// <summary>
+        /// reset write offset and read offset
+        /// </summary>
         public void Reset()
         {
             writeOffset = readOffset = 0;
